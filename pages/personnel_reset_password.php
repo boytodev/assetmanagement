@@ -62,10 +62,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
   <?php include '../partials/sidebar.php'; ?>
 
-  <div class="flex-1 ml-64 p-6">
+  <div class="flex-1 ml-64">
     <?php include '../partials/header.php'; ?>
 
-    <h2 class="text-xl font-bold text-gray-700 mb-6">รีเซ็ตรหัสผ่านบุคลากร</h2>
+    <div class="py-6 px-3">
+      <h2 class="text-xl font-bold text-gray-700 mb-6">รีเซ็ตรหัสผ่านบุคลากร</h2>
 
     <form method="POST" class="bg-white shadow p-6 max-w-xl rounded-lg space-y-4">
       <div>
@@ -95,6 +96,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </button>
       </div>
     </form>
+    </div>
   </div>
 
   <?php if ($success): ?>
