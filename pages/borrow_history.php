@@ -2,21 +2,39 @@
 require_once '../includes/auth.php';
 require_once '../includes/db.php';
 
-$personnel_id = $_SESSION['user']['personnel_id'];
+// ตรวจสอบสิทธิ์ admin หรือไม่
+$is_admin = ($_SESSION['user']['user_role'] === 'admin');
 
-// ดึงประวัติการเบิกของผู้ใช้งาน
-$sql = "
-SELECT b.*, ai.asset_number
-FROM asset_borrowing b
-JOIN asset_item ai ON b.item_id = ai.item_id
-WHERE b.personnel_id = ?
-ORDER BY b.borrow_date DESC
-";
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("i", $personnel_id);
+// ถ้าเป็นผู้ใช้งานทั่วไป ใช้ personnel_id เฉพาะของตัวเอง
+if (!$is_admin) {
+    $personnel_id = $_SESSION['user']['personnel_id'];
+
+    $sql = "
+    SELECT b.*, ai.asset_number, p.full_name
+    FROM asset_borrowing b
+    JOIN asset_item ai ON b.item_id = ai.item_id
+    JOIN personnel p ON b.personnel_id = p.personnel_id
+    WHERE b.personnel_id = ?
+    ORDER BY b.borrow_date DESC
+    ";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $personnel_id);
+} else {
+    // ถ้าเป็น admin ให้ดึงทุกคำขอ
+    $sql = "
+    SELECT b.*, ai.asset_number, p.full_name
+    FROM asset_borrowing b
+    JOIN asset_item ai ON b.item_id = ai.item_id
+    JOIN personnel p ON b.personnel_id = p.personnel_id
+    ORDER BY b.borrow_date DESC
+    ";
+    $stmt = $conn->prepare($sql);
+}
+
 $stmt->execute();
 $result = $stmt->get_result();
 ?>
+
 
 <!DOCTYPE html>
 <html lang="th">
