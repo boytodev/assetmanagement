@@ -83,7 +83,7 @@
   </nav>
 
   <div class="p-4 border-t border-gray-700">
-    <a href="/assetmanagement/logout.php" class="text-red-300 hover:text-red-500 flex items-center space-x-2">
+    <a href="/logout.php" class="text-red-300 hover:text-red-500 flex items-center space-x-2">
       <i class="bi bi-box-arrow-right"></i>
       <span>ออกจากระบบ</span>
     </a>
