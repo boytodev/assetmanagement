@@ -38,12 +38,14 @@
   <i class="bi bi-clipboard-plus"></i>
   <span>ขอเบิกครุภัณฑ์</span>
 </a>
+<?php endif; ?>
 
 <a href="borrow_history.php" class="flex items-center space-x-2 p-2 rounded hover:bg-gray-700">
   <i class="bi bi-clock-history"></i>
   <span>ประวัติการเบิก</span>
 </a>
 
+<?php if ($user['user_role'] === 'admin'): ?>
 <a href="borrow_return.php" class="flex items-center space-x-2 p-2 rounded hover:bg-gray-700">
   <i class="bi bi-arrow-return-left"></i>
   <span>คืนครุภัณฑ์</span>
@@ -53,8 +55,6 @@
   <i class="bi bi-exclamation-triangle"></i>
   <span>แจ้งชำรุด / สูญหาย</span>
 </a>
-
-
 <?php endif; ?>
 
 <?php if ($user['user_role'] === 'admin'): ?>
