@@ -8,7 +8,7 @@
     <div class="text-sm text-blue-300"><?php echo htmlspecialchars($user['user_role']) ?></div>
   </div>
 
-  <nav class="flex-1 px-4 py-4 space-y-2">
+  <nav class="flex-1 px-4 py-4 space-y-2 overflow-y-auto">
     <!-- ทุกคนเห็นได้ -->
     <a href="dashboard.php" class="flex items-center space-x-2 p-2 rounded hover:bg-gray-700">
       <i class="bi bi-house-door"></i>
