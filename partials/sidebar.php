@@ -45,12 +45,12 @@
   <span>ประวัติการเบิก</span>
 </a>
 
-<?php if ($user['user_role'] === 'admin'): ?>
 <a href="borrow_return.php" class="flex items-center space-x-2 p-2 rounded hover:bg-gray-700">
   <i class="bi bi-arrow-return-left"></i>
   <span>คืนครุภัณฑ์</span>
 </a>
 
+<?php if ($user['user_role'] === 'admin'): ?>
 <a href="report_damage.php" class="flex items-center space-x-2 p-2 rounded hover:bg-gray-700">
   <i class="bi bi-exclamation-triangle"></i>
   <span>แจ้งชำรุด / สูญหาย</span>
