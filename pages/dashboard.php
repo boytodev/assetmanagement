@@ -33,6 +33,14 @@ $latest_return = $conn->query("
   ORDER BY b.borrow_date DESC
   LIMIT 5
 ");
+
+// สรุปการเบิกรายปี
+$yearly_borrow = $conn->query("
+  SELECT YEAR(borrow_date) AS year, COUNT(*) AS total
+  FROM asset_borrowing
+  GROUP BY YEAR(borrow_date)
+  ORDER BY year DESC
+");
 ?>
 
 <!DOCTYPE html>
@@ -52,79 +60,105 @@ $latest_return = $conn->query("
   <div class="flex-1 ml-64">
     <?php include '../partials/header.php'; ?>
 
-    <!-- สถิติ -->
     <div class="py-6 px-3">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-4">
-      <div class="bg-white shadow p-4 rounded text-center">
-        <div class="text-gray-500 text-sm mb-1">ครุภัณฑ์ทั้งหมด</div>
-        <div class="text-3xl font-bold text-blue-600"><?= $total_assets ?></div>
-      </div>
-      <div class="bg-white shadow p-4 rounded text-center">
-        <div class="text-gray-500 text-sm mb-1">ใช้งานได้</div>
-        <div class="text-3xl font-bold text-green-600"><?= $usable ?></div>
-      </div>
-      <div class="bg-white shadow p-4 rounded text-center">
-        <div class="text-gray-500 text-sm mb-1">ยืมอยู่</div>
-        <div class="text-3xl font-bold text-yellow-600"><?= $borrowed ?></div>
-      </div>
-      <div class="bg-white shadow p-4 rounded text-center">
-        <div class="text-gray-500 text-sm mb-1">คืนแล้ว</div>
-        <div class="text-3xl font-bold text-blue-400"><?= $returned ?></div>
-      </div>
-      <div class="bg-white shadow p-4 rounded text-center">
-        <div class="text-gray-500 text-sm mb-1">ชำรุด</div>
-        <div class="text-3xl font-bold text-red-500"><?= $broken ?></div>
-      </div>
-      <div class="bg-white shadow p-4 rounded text-center">
-        <div class="text-gray-500 text-sm mb-1">สูญหาย</div>
-        <div class="text-3xl font-bold text-red-700"><?= $lost ?></div>
-      </div>
-    </div>
 
-    <!-- บุคลากร / กลุ่ม -->
-    <div class="grid grid-cols-2 gap-6 mt-6">
-      <div class="bg-white shadow p-4 rounded text-center">
-        <div class="text-gray-500 text-sm mb-2">จำนวนบุคลากร</div>
-        <div class="text-3xl font-bold text-indigo-600"><?= $total_personnel ?></div>
+      <!-- สถิติ -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-4">
+        <?php
+        $boxes = [
+          ['label' => 'ครุภัณฑ์ทั้งหมด', 'value' => $total_assets, 'color' => 'blue-600'],
+          ['label' => 'ใช้งานได้', 'value' => $usable, 'color' => 'green-600'],
+          ['label' => 'ยืมอยู่', 'value' => $borrowed, 'color' => 'yellow-600'],
+          ['label' => 'คืนแล้ว', 'value' => $returned, 'color' => 'blue-400'],
+          ['label' => 'ชำรุด', 'value' => $broken, 'color' => 'red-500'],
+          ['label' => 'สูญหาย', 'value' => $lost, 'color' => 'red-700'],
+        ];
+        foreach ($boxes as $box):
+        ?>
+        <div class="bg-white shadow p-4 rounded text-center">
+          <div class="text-gray-500 text-sm mb-1"><?= $box['label'] ?></div>
+          <div class="text-3xl font-bold text-<?= $box['color'] ?>"><?= $box['value'] ?></div>
+        </div>
+        <?php endforeach; ?>
       </div>
-      <div class="bg-white shadow p-4 rounded text-center">
-        <div class="text-gray-500 text-sm mb-2">กลุ่มงานทั้งหมด</div>
-        <div class="text-3xl font-bold text-purple-600"><?= $total_groups ?></div>
-      </div>
-    </div>
 
-    <!-- รายการล่าสุด -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
-      <!-- เบิกล่าสุด -->
-      <div class="bg-white shadow rounded-lg p-4">
+      <!-- บุคลากร / กลุ่ม -->
+      <div class="grid grid-cols-2 gap-6 mt-6">
+        <div class="bg-white shadow p-4 rounded text-center">
+          <div class="text-gray-500 text-sm mb-2">จำนวนบุคลากร</div>
+          <div class="text-3xl font-bold text-indigo-600"><?= $total_personnel ?></div>
+        </div>
+        <div class="bg-white shadow p-4 rounded text-center">
+          <div class="text-gray-500 text-sm mb-2">กลุ่มงานทั้งหมด</div>
+          <div class="text-3xl font-bold text-purple-600"><?= $total_groups ?></div>
+        </div>
+      </div>
+
+      <!-- รายการล่าสุด -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+        <!-- เบิกล่าสุด -->
+        <div class="bg-white shadow rounded-lg p-4">
+          <h3 class="text-lg font-semibold text-gray-700 mb-4">
+            <i class="bi bi-clipboard-plus"></i> การเบิกล่าสุด
+          </h3>
+          <ul class="space-y-2 text-sm">
+            <?php if ($latest_borrow->num_rows > 0): ?>
+              <?php while ($row = $latest_borrow->fetch_assoc()): ?>
+                <li class="flex justify-between border-b pb-1">
+                  <span><?= htmlspecialchars($row['full_name']) ?> เบิก <?= htmlspecialchars($row['asset_number']) ?></span>
+                  <span class="text-gray-500"><?= date("d/m/Y", strtotime($row['borrow_date'])) ?></span>
+                </li>
+              <?php endwhile; ?>
+            <?php else: ?>
+              <li class="text-gray-500">ไม่มีรายการ</li>
+            <?php endif; ?>
+          </ul>
+        </div>
+
+        <!-- คืนล่าสุด -->
+        <div class="bg-white shadow rounded-lg p-4">
+          <h3 class="text-lg font-semibold text-gray-700 mb-4">
+            <i class="bi bi-arrow-return-left"></i> การคืนล่าสุด
+          </h3>
+          <ul class="space-y-2 text-sm">
+            <?php if ($latest_return->num_rows > 0): ?>
+              <?php while ($row = $latest_return->fetch_assoc()): ?>
+                <li class="flex justify-between border-b pb-1">
+                  <span><?= htmlspecialchars($row['full_name']) ?> คืน <?= htmlspecialchars($row['asset_number']) ?></span>
+                  <span class="text-gray-500"><?= date("d/m/Y", strtotime($row['borrow_date'])) ?></span>
+                </li>
+              <?php endwhile; ?>
+            <?php else: ?>
+              <li class="text-gray-500">ไม่มีรายการ</li>
+            <?php endif; ?>
+          </ul>
+        </div>
+      </div>
+
+      <!-- สรุปการเบิกรายปี -->
+      <div class="mt-12 bg-white shadow p-6 rounded-lg">
         <h3 class="text-lg font-semibold text-gray-700 mb-4">
-          <i class="bi bi-clipboard-plus"></i> การเบิกล่าสุด
+          <i class="bi bi-calendar3"></i> สรุปจำนวนการเบิกรายปี
         </h3>
-        <ul class="space-y-2 text-sm">
-          <?php while ($row = $latest_borrow->fetch_assoc()): ?>
-            <li class="flex justify-between border-b pb-1">
-              <span><?= htmlspecialchars($row['full_name']) ?> เบิก <?= htmlspecialchars($row['asset_number']) ?></span>
-              <span class="text-gray-500"><?= date("d/m/Y", strtotime($row['borrow_date'])) ?></span>
-            </li>
-          <?php endwhile; ?>
-        </ul>
+
+        <table class="min-w-full text-sm text-left text-gray-700">
+          <thead class="bg-gray-100 text-gray-700 uppercase text-xs">
+            <tr>
+              <th class="px-4 py-2">ปี</th>
+              <th class="px-4 py-2">จำนวนรายการเบิก</th>
+            </tr>
+          </thead>
+          <tbody>
+            <?php while ($row = $yearly_borrow->fetch_assoc()): ?>
+            <tr class="border-b hover:bg-gray-50">
+              <td class="px-4 py-2"><?= $row['year'] ?></td>
+              <td class="px-4 py-2"><?= $row['total'] ?></td>
+            </tr>
+            <?php endwhile; ?>
+          </tbody>
+        </table>
       </div>
 
-      <!-- คืนล่าสุด -->
-      <div class="bg-white shadow rounded-lg p-4">
-        <h3 class="text-lg font-semibold text-gray-700 mb-4">
-          <i class="bi bi-arrow-return-left"></i> การคืนล่าสุด
-        </h3>
-        <ul class="space-y-2 text-sm">
-          <?php while ($row = $latest_return->fetch_assoc()): ?>
-            <li class="flex justify-between border-b pb-1">
-              <span><?= htmlspecialchars($row['full_name']) ?> คืน <?= htmlspecialchars($row['asset_number']) ?></span>
-              <span class="text-gray-500"><?= date("d/m/Y", strtotime($row['borrow_date'])) ?></span>
-            </li>
-          <?php endwhile; ?>
-        </ul>
-      </div>
-    </div>
     </div>
   </div>
 </body>
