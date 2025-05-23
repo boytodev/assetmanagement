@@ -47,7 +47,7 @@
 
 <a href="borrow_return.php" class="flex items-center space-x-2 p-2 rounded hover:bg-gray-700">
   <i class="bi bi-arrow-return-left"></i>
-  <span>คืนครุภัณฑ์</span>
+  <span>ครุภัณฑ์ที่หมดอายุการใช้งาน</span>
 </a>
 
 <?php if ($user['user_role'] === 'admin'): ?>

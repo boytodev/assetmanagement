@@ -69,7 +69,7 @@ $yearly_borrow = $conn->query("
           ['label' => 'ครุภัณฑ์ทั้งหมด', 'value' => $total_assets, 'color' => 'blue-600'],
           ['label' => 'ใช้งานได้', 'value' => $usable, 'color' => 'green-600'],
           ['label' => 'ยืมอยู่', 'value' => $borrowed, 'color' => 'yellow-600'],
-          ['label' => 'คืนแล้ว', 'value' => $returned, 'color' => 'blue-400'],
+          ['label' => 'หมดอายุการใช้งาน', 'value' => $returned, 'color' => 'blue-400'],
           ['label' => 'ชำรุด', 'value' => $broken, 'color' => 'red-500'],
           ['label' => 'สูญหาย', 'value' => $lost, 'color' => 'red-700'],
         ];
