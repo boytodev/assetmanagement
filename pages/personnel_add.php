@@ -11,7 +11,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $phone = $_POST['phone_number'];
     $created_at = date('Y-m-d');
     $username = $_POST['username'];
-    $password = password_hash('123456', PASSWORD_DEFAULT);
+    $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
 
     $stmt = $conn->prepare("INSERT INTO personnel (full_name, phone_number, username, password, user_role, group_id) VALUES (?, ?, ?, ?, 'user', ?)");
     $stmt->bind_param("ssssi", $full_name, $phone, $username, $password, $group_id);
